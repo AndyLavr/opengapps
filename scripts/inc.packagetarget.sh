@@ -30,6 +30,7 @@ commonscripts() {
   makeinstallerdata
   bundlexz # on arm platforms we can include our own xz binary
   makeupdatebinary # execute as last, it contains $EXTRACTFILES from the previous commands
+  bundlelicense #optionally add a LICENSE file to the package
 }
 
 aromascripts() {
@@ -61,6 +62,15 @@ bundlexz() {
   esac
   copy "$SCRIPTS/xz-resources/$xzbin" "$build/xzdec"
   EXTRACTFILES="$EXTRACTFILES xzdec"
+}
+
+bundlelicense() {
+  if [ -n "$OPENGAPPSLICENSEFILE" ] && [ -e "$OPENGAPPSLICENSEFILE" ]; then
+    echo "INFO: using $OPENGAPPSLICENSEFILE as LICENSE file"
+    copy "$OPENGAPPSLICENSEFILE" "$build/LICENSE"
+  elif [ -e "LICENSE" ]; then
+    copy "LICENSE" "$build/LICENSE"
+  fi
 }
 
 createxz() {
@@ -172,7 +182,14 @@ signzip() {
     rm "$signedzip"
   fi
 
-  if java -Xmx3072m -jar "$SCRIPTS/inc.signapk.jar" -w "$CERTIFICATES/testkey.x509.pem" "$CERTIFICATES/testkey.pk8" "$unsignedzip" "$signedzip"; then #if signing did succeed
+  if [ -z "$CERTIFICATEFILE" ] || [ ! -e "$CERTIFICATEFILE" ]; then
+    CERTIFICATEFILE="$CERTIFICATES/testkey.x509.pem"
+  fi
+  if [ -z "$KEYFILE" ] || [ ! -e "$KEYFILE" ]; then
+    KEYFILE="$CERTIFICATES/testkey.pk8"
+  fi
+
+  if java -Xmx3072m -jar "$SCRIPTS/inc.signapk.jar" -w "$CERTIFICATEFILE" "$KEYFILE" "$unsignedzip" "$signedzip"; then #if signing did succeed
     rm "$unsignedzip"
   else
     echo "ERROR: Creating Flashable ZIP-file failed, unsigned file can be found at $unsignedzip"
