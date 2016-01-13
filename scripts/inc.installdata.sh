@@ -146,7 +146,7 @@ pico_gapps_list="
 ";
 # _____________________________________________________________________________________________________________________
 #                                             Default Stock/AOSP Removal List (Stock GApps Only)
-default_aosp_remove_list="
+default_stock_remove_list="
 '"$stockremove"'
 ";
 # _____________________________________________________________________________________________________________________
@@ -161,6 +161,7 @@ cmaudiofx
 cmaccount
 cmeleven
 cmfilemanager
+cmmusic
 cmsetupwizard
 cmupdater
 cmwallpapers
@@ -241,6 +242,10 @@ app/Eleven'"$REMOVALSUFFIX"'
 
 cmfilemanager_list="
 app/CMFileManager'"$REMOVALSUFFIX"'
+";
+
+cmmusic_list="
+app/Music'"$REMOVALSUFFIX"'
 ";
 
 cmupdater_list="

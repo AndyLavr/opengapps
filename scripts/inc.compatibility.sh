@@ -34,14 +34,23 @@ keyboardlibhack(){
 /system/app/LatinIME/lib/$ARCH/libjni_latinimegoogle.so"
             KEYBDLIBS='keybd_lib_google="libjni_latinimegoogle.so";'
             # Only touch AOSP keyboard only if it is not removed
-            KEYBDINSTALLCODE='if ( ! contains "$gapps_list" "keyboardgoogle" ); then
-  extract_app "Optional/swypelibs";
-  mkdir -p "/system/app/LatinIME/lib/'"$ARCH"'";
-  ln -sfn "/system/'"$LIBFOLDER"'/$keybd_lib_google" "/system/app/LatinIME/lib/'"$ARCH"'/$keybd_lib_google"; # create required symlink
+            KEYBDINSTALLCODE='# Install/Remove SwypeLibs
+if ( ! contains "$gapps_list" "keyboardgoogle" ); then
+  if [ "$skipswypelibs" = "false" ]; then
+    ui_print "- Installing swypelibs";
+    log "- Installing " "swypelibs";
+    extract_app "Optional/swypelibs";
+    install -d "/system/app/LatinIME/lib/'"$ARCH"'";
+    ln -sfn "/system/'"$LIBFOLDER"'/$keybd_lib_google" "/system/app/LatinIME/lib/'"$ARCH"'/$keybd_lib_google"; # create required symlink
 
-  # Add same code to backup script to insure symlinks are recreated on addon.d restore
-  sed -i "\:# Recreate required symlinks (from GApps Installer):a \    ln -sfn \"/system/'"$LIBFOLDER"'/$keybd_lib_google\" \"/system/app/LatinIME/lib/'"$ARCH"'/$keybd_lib_google\"" $bkup_tail;
-  sed -i "\:# Recreate required symlinks (from GApps Installer):a \    mkdir -p \"/system/app/LatinIME/lib/'"$ARCH"'\"" $bkup_tail;
+    # Add same code to backup script to insure symlinks are recreated on addon.d restore
+    sed -i "\:# Recreate required symlinks (from GApps Installer):a \    ln -sfn \"/system/'"$LIBFOLDER"'/$keybd_lib_google\" \"/system/app/LatinIME/lib/'"$ARCH"'/$keybd_lib_google\"" $bkup_tail;
+    sed -i "\:# Recreate required symlinks (from GApps Installer):a \    install -d \"/system/app/LatinIME/lib/'"$ARCH"'\"" $bkup_tail;
+  else
+    ui_print "- Removing swypelibs";
+    log "- Removing " "swypelibs";
+    rm -f "/system/'"$LIBFOLDER"'/$keybd_lib_google" "/system/app/LatinIME/'"$LIBFOLDER"'/'"$ARCH"'/$keybd_lib_google"; # remove swypelibs and symlink if any
+  fi;
 fi;'
           else # on KitKat we need to replace the aosp lib with a symlink, it has no 64bit libs
             REQDLIST="/system/lib/libjni_latinime.so
@@ -49,12 +58,22 @@ fi;'
             KEYBDLIBS='keybd_lib_google="libjni_latinimegoogle.so";
 keybd_lib_aosp="libjni_latinime.so";'
       # Only touch AOSP keyboard only if it is not removed
-            KEYBDINSTALLCODE='if ( ! contains "$gapps_list" "keyboardgoogle" ); then
-  extract_app "Optional/swypelibs";
-  ln -sfn "/system/'"$LIBFOLDER"'/$keybd_lib_google" "/system/'"$LIBFOLDER"'/$keybd_lib_aosp"; # create required symlink
+            KEYBDINSTALLCODE='# Install/Remove SwypeLibs
+if ( ! contains "$gapps_list" "keyboardgoogle" ); then
+  if [ "$skipswypelibs" = "false" ]; then
+    ui_print "- Installing swypelibs";
+    log "- Installing " "swypelibs";
+    extract_app "Optional/swypelibs";
+    ln -sfn "/system/'"$LIBFOLDER"'/$keybd_lib_google" "/system/'"$LIBFOLDER"'/$keybd_lib_aosp"; # create required symlink
 
-  # Add same code to backup script to insure symlinks are recreated on addon.d restore
-  sed -i "\:# Recreate required symlinks (from GApps Installer):a \    ln -sfn \"/system/'"$LIBFOLDER"'/$keybd_lib_google\" \"/system/'"$LIBFOLDER"'/$keybd_lib_aosp\"" $bkup_tail;
+    # Add same code to backup script to insure symlinks are recreated on addon.d restore
+    sed -i "\:# Recreate required symlinks (from GApps Installer):a \    ln -sfn \"/system/'"$LIBFOLDER"'/$keybd_lib_google\" \"/system/'"$LIBFOLDER"'/$keybd_lib_aosp\"" $bkup_tail;
+  else
+    ui_print "- Restoring non-swypelibs";
+    log "- Restoring " " non-swypelibs";
+    rm -f "/system/'"$LIBFOLDER"'/$keybd_lib_google"; # remove swypelibs
+    ln -sfn "/system/'"$LIBFOLDER"'/$keybd_lib_aosp" "/system/'"$LIBFOLDER"'/'"$ARCH"'/$keybd_lib_aosp"; # restore non-swypelibs symlink
+  fi;
 fi;'
           fi;;
     *) REQDLIST=""
@@ -77,10 +96,16 @@ if ( contains "$gapps_list" "hangouts" ); then
   tarpath="/tmp/GApps/hangouts.tar.xz";
   which_dpi "hangouts";
   tar -xJf "$tarpath" -C /tmp "$dpiapkpath";
-  cp -rf /tmp/$dpiapkpath/priv-app/Hangouts.apk /data/app/com.google.android.talk.apk;
+  number="$(basename "$(find /data/app/com.google.android.talk-* | head -n1)" .apk | rev | cut -d- -f1)"
+  if [ -z "$number" ]; then
+    number="1"
+  fi
+  cp -rf /tmp/$dpiapkpath/app/Hangouts.apk /data/app/com.google.android.talk-$number.apk;
   rm -rf /tmp/$dpiapkpath;
-  tar -xJf "$tarpath" -C /tmp "common";
-  cp -rf /tmp/hangouts/common/lib. /data/app-lib/com.google.android.talk/;
+  tar -xJf "$tarpath" -C /tmp "hangouts/common";
+  cp -rf /tmp/hangouts/common/lib* /data/app-lib/com.google.android.talk-$number/;
+  set_perm 1000 1000 644 "/data/app/com.google.android.talk-$number.apk"
+  set_perm_recursive 1000 1000 755 644 "/data/app-lib/com.google.android.talk-$number"
   rm -rf /tmp/hangouts/common;
   rm -f "$tarpath";
   gapps_list=${gapps_list/hangouts};
@@ -91,10 +116,16 @@ if ( contains "$gapps_list" "googleplus" ); then
   tarpath="/tmp/GApps/googleplus.tar.xz";
   which_dpi "googleplus";
   tar -xJf "$tarpath" -C /tmp "$dpiapkpath";
-  cp -rf /tmp/$dpiapkpath/app/PlusOne.apk /data/app/com.google.android.apps.plus.apk;
+  number="$(basename "$(find /data/app/com.google.android.apps.plus-* | head -n1)" .apk | rev | cut -d- -f1)"
+  if [ -z "$number" ]; then
+    number="1"
+  fi
+  cp -rf /tmp/$dpiapkpath/app/PlusOne.apk /data/app/com.google.android.apps.plus-$number.apk;
   rm -rf /tmp/$dpiapkpath;
-  tar -xJf "$tarpath" -C /tmp "common";
-  cp -rf /tmp/googleplus/common/lib. /data/app-lib/com.google.android.apps.plus/;
+  tar -xJf "$tarpath" -C /tmp "googleplus/common";
+  cp -rf /tmp/googleplus/common/lib* /data/app-lib/com.google.android.apps.plus-$number/;
+  set_perm 1000 1000 644 "/data/app/com.google.android.apps.plus-$number.apk"
+  set_perm_recursive 1000 1000 755 644 "/data/app-lib/com.google.android.apps.plus-$number"
   rm -rf /tmp/googleplus/common;
   rm -f "$tarpath";
   gapps_list=${gapps_list/googleplus};
@@ -105,10 +136,16 @@ if ( contains "$gapps_list" "photos" ); then
   tarpath="/tmp/GApps/photos.tar.xz";
   which_dpi "photos";
   tar -xJf "$tarpath" -C /tmp "$dpiapkpath";
-  cp -rf /tmp/$dpiapkpath/app/Photos.apk /data/app/com.google.android.apps.photos.apk;
+  number="$(basename "$(find /data/app/com.google.android.apps.photos-* | head -n1)" .apk | rev | cut -d- -f1)"
+  if [ -z "$number" ]; then
+    number="1"
+  fi
+  cp -rf /tmp/$dpiapkpath/app/Photos.apk /data/app/com.google.android.apps.photos-$number.apk;
   rm -rf /tmp/$dpiapkpath;
-  tar -xJf "$tarpath" -C /tmp "common";
-  cp -rf /tmp/photos/common/lib. /data/app-lib/com.google.android.apps.photos/;
+  tar -xJf "$tarpath" -C /tmp "photos/common";
+  cp -rf /tmp/photos/common/lib* /data/app-lib/com.google.android.apps.photos-$number/;
+  set_perm 1000 1000 644 "/data/app/com.google.android.apps.photos-$number.apk"
+  set_perm_recursive 1000 1000 755 644 "/data/app-lib/com.google.android.apps.photos-$number"
   rm -rf /tmp/photos/common;
   rm -f "$tarpath";
   gapps_list=${gapps_list/photos};
@@ -119,10 +156,16 @@ if ( contains "$gapps_list" "youtube" ); then
   tarpath="/tmp/GApps/youtube.tar.xz";
   which_dpi "youtube";
   tar -xJf "$tarpath" -C /tmp "$dpiapkpath";
-  cp -rf /tmp/$dpiapkpath/app/YouTube.apk /data/app/com.google.android.youtube.apk;
+  number="$(basename "$(find /data/app/com.google.android.youtube-* | head -n1)" .apk | rev | cut -d- -f1)"
+  if [ -z "$number" ]; then
+    number="1"
+  fi
+  cp -rf /tmp/$dpiapkpath/app/YouTube.apk /data/app/com.google.android.youtube-$number.apk;
   rm -rf /tmp/$dpiapkpath;
-  tar -xJf "$tarpath" -C /tmp "common";
-  cp -rf /tmp/youtube/common/lib. /data/app-lib/com.google.android.youtube/;
+  tar -xJf "$tarpath" -C /tmp "youtube/common";
+  cp -rf /tmp/youtube/common/lib* /data/app-lib/com.google.android.youtube-$number/;
+  set_perm 1000 1000 644 "/data/app/com.google.android.youtube-$number.apk"
+  set_perm_recursive 1000 1000 755 644 "/data/app-lib/com.google.android.youtube-$number"
   rm -rf /tmp/youtube/common;
   rm -f "$tarpath";
   gapps_list=${gapps_list/youtube};
@@ -198,6 +241,9 @@ api21hack(){
   if [ "$API" -ge "21" ]; then
     gappsmini="$gappsmini
 taggoogle"
+    miniremove="$miniremove
+clockstock
+tagstock"
   fi
 }
 
@@ -226,6 +272,7 @@ calculatorgoogle"
     gappsstock="$gappsstock
 contactsgoogle"
 #dialergoogle"
+
     webviewstocklibs='lib/$WebView_lib_filename
 lib64/$WebView_lib_filename
 ' #on Marshmallow the AOSP WebViewlibs must be removed, since they are embedded in the Google WebView APK; this assumes also any pre-bundled Google WebView with the ROM uses embedded libs; use single quote to not replace variable names
@@ -237,4 +284,11 @@ googletts"
     webviewgappsremove="lib/libwebviewchromium.so
 lib64/libwebviewchromium.so" #on non-Marshmallow the WebViewlibs are to be explictly included as a Google WebView file in gapps-remove.txt
   fi
+}
+
+sdkversionhacks(){
+  case "$package" in
+    com.android.facelock) if [ "$versioncode" = "23" ]; then sdkversion="23"; fi;;
+    *) ;;
+  esac
 }
