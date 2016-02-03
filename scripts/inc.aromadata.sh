@@ -203,6 +203,7 @@ form(
     bypass.prop,
     "bypassrem",     "Bypass the automatic removal of Stock/AOSP apps",        "",     "group",
       "+Browser",     "<b>+Browser</b>",      "",    "check",
+      "+CameraStock", "<b>+CameraStock</b>",  "",    "check",
       "+Email",     "<b>+Email</b>",      "",        "check",
       "+Gallery",     "<b>+Gallery</b>",      "",    "check",
       "+Launcher",     "<b>+Launcher</b>",      "",  "check",
@@ -217,7 +218,7 @@ form(
     rem.prop,
     "remove",     "Choose apps which you want to remove",        "",                                         "group",
       "BasicDreams",     "<b>Basic Dreams Live Wallpaper</b>",       "",                      "check",
-      "Browser",     "<b>Stock/AOSP Browser</b>",       "",                      "check",
+      "Browser",     "<b>Stock/AOSP Browser</b>",       "(automatically removed when Google Chrome is installed)",                      "check",
       "CalendarStock",     "<b>Stock/AOSP Calendar</b>",       "(automatically removed when Google Calendar is installed)",                      "check",
       "CameraStock",     "<b>Stock/AOSP/Moto Camera</b>",       "(automatically removed when Google Camera is installed)",                      "check",
       "ClockStock",     "<b>Stock/AOSP Clock</b>",       "(automatically removed when Google Clock is installed)",                      "check",
@@ -233,18 +234,18 @@ form(
       "ExchangeStock",     "<b>Stock/AOSP Exchange Services</b>",       "(automatically removed when Google Exchange Services is installed)",                      "check",
       "FMRadio",     "<b>Stock/AOSP FM Radio</b>",       "(not found on all devices or ROM's)",                      "check",
       "Galaxy",     "<b>Galaxy Live Wallpaper</b>",       "",                      "check",
-      "Gallery",     "<b>Stock/AOSP Gallery</b>",       "",                      "check",
+      "Gallery",     "<b>Stock/AOSP Gallery</b>",       "(automatically removed when Google Photos is installed)",                      "check",
       "HoloSpiral",     "<b>Holo Spiral Live Wallpaper</b>",       "",                      "check",
       "KeyboardStock",     "<b>Stock/AOSP Keyboard</b>",       "(automatically removed when Google Keyboard is installed)",                      "check",
-      "Launcher",     "<b>Stock/AOSP Launcher(s)</b>",       "",                      "check",
+      "Launcher",     "<b>Stock/AOSP Launcher(s)</b>",       "(automatically removed when Google Launcher is installed)",                      "check",
       "LiveWallpapers",     "<b>Live Wallpapers</b>",       "",                      "check",
       "LockClock",     "<b>Lock Clock</b>",       "(a widget found in certain ROMs)",                      "check",
-      "MMS",     "<b>Stock/AOSP MMS</b>",       "",                      "check",
+      "MMS",     "<b>Stock/AOSP MMS</b>",       "(automatically removed when Google Hangouts or Messenger are installed)",                      "check",
       "NoiseField",     "<b>NoiseField Live Wallpaper</b>",       "",                      "check",
       "Phasebeam",     "<b>Phasebeam Live Wallpaper</b>",       "",                      "check",
       "PhotoPhase",     "<b>PhotoPhase Live Wallpaper</b>",       "",                      "check",
       "PhotoTable",     "<b>PhotoTable Live Wallpaper</b>",       "",                      "check",
-      "PicoTTS",     "<b>Stock/AOSP Text-to-Speech</b>",       "",                      "check",
+      "PicoTTS",     "<b>Stock/AOSP Text-to-Speech</b>",       "(automatically removed when Google TTS is installed)",                      "check",
       "SimToolKit",     "<b>Stock/AOSP Sim ToolKit</b>",       "",                      "check",
       "Studio",     "<b>Stock/AOSP Movie Studio</b>",       "",                      "check",
       "SykoPath",     "<b>SykoPath Layers Manager</b>",       "(found in certain ROM's)",                      "check",
@@ -849,6 +850,11 @@ if
   prop("bypass.prop", "+Browser")=="1"
 then
   appendvar("gapps", "+Browser\n");
+endif;
+if
+  prop("bypass.prop", "+CameraStock")=="1"
+then
+  appendvar("gapps", "+CameraStock\n");
 endif;
 if
   prop("bypass.prop", "+Email")=="1"
