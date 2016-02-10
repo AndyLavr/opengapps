@@ -177,6 +177,7 @@ noisefield
 phasebeam
 photophase
 phototable
+provision
 simtoolkit
 studio
 sykopath
@@ -363,10 +364,11 @@ noisefield_list="
 app/NoiseField'"$REMOVALSUFFIX"'
 ";
 
-# Must be used when Google PackageInstaller is installed
+# Must be used when Google PackageInstaller is installed; non-capitalized spelling on Lenovo K3 Note
 packageinstallerstock_list="
 app/PackageInstaller'"$REMOVALSUFFIX"'
 priv-app/PackageInstaller'"$REMOVALSUFFIX"'
+priv-app/packageinstaller'"$REMOVALSUFFIX"'
 ";
 
 phasebeam_list="
@@ -388,6 +390,11 @@ lib/libttscompat.so
 lib/libttspico.so
 tts
 ";
+
+provision_list="
+app/Provision'"$REMOVALSUFFIX"'
+priv-app/Provision'"$REMOVALSUFFIX"'
+"
 
 simtoolkit_list="
 app/Stk'"$REMOVALSUFFIX"'
@@ -450,7 +457,6 @@ other_list="
 /system/app/PartnerBookmarksProvider'"$REMOVALSUFFIX"'
 /system/app/PrebuiltBugleStub'"$REMOVALSUFFIX"'
 /system/app/PrebuiltKeepStub'"$REMOVALSUFFIX"'
-/system/app/Provision'"$REMOVALSUFFIX"'
 /system/app/QuickSearchBox'"$REMOVALSUFFIX"'
 /system/app/Vending'"$REMOVALSUFFIX"'
 /system/priv-app/GmsCore'"$REMOVALSUFFIX"'
@@ -458,7 +464,6 @@ other_list="
 /system/priv-app/GoogleSearch'"$REMOVALSUFFIX"'
 /system/priv-app/GoogleHangouts'"$REMOVALSUFFIX"'
 /system/priv-app/OneTimeInitializer'"$REMOVALSUFFIX"'
-/system/priv-app/Provision'"$REMOVALSUFFIX"'
 /system/priv-app/QuickSearchBox'"$REMOVALSUFFIX"'
 /system/priv-app/Vending'"$REMOVALSUFFIX"'
 /system/priv-app/Velvet_update'"$REMOVALSUFFIX"'

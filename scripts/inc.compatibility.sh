@@ -215,6 +215,15 @@ minapihack(){
   esac
 }
 
+provisionremovalhack(){
+  if [ "$API" -le "22" ]; then
+    tee -a "$build/META-INF/com/google/android/update-binary" > /dev/null <<'EOFILE'
+# On Pre-Marshmallow the Provision folder does always have to be removed (it conflicts with SetupWizard.apk)
+aosp_remove_list="${remove_list}provision"$'\n';
+EOFILE
+  fi
+}
+
 systemlibhack(){
   case "$package" in
     com.google.android.webview) if [ "$API" -lt "23" ]; then #webview libs are only on /system/lib/ on pre-Marshmallow
@@ -244,6 +253,8 @@ versionnamehack(){
     com.google.android.apps.docs*) versionname="$(echo "$versionname" | cut -c 1-10)";;
     #the Fitness variate the last 3 digits per DPI variant
     com.google.android.apps.fitness) versionname="$(echo "$versionname" | cut -c 1-7)";;
+    #the Project FI variates with different lengths at the end, but begin string is always 8 long
+    com.google.android.apps.tycho) versionname="$(echo "$versionname" | cut -c 1-8)";;
   esac
 }
 
