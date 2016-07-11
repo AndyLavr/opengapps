@@ -12,7 +12,7 @@
 #
 makearomaconfig(){
 tee "$build/META-INF/com/google/android/aroma-config" > /dev/null <<'EOFILE'
-#This file is part of The Open GApps script of @raulx222.
+#This file is part of The Open GApps script of @raulpetru.
 #
 #    The Open GApps scripts are free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -134,7 +134,6 @@ form(
 
     "gapps",     "Choose GApps which you want to add on install/exclude list",        "",                                         "group",
       "AndroidPay",     "<b>Android Pay</b>",       "",                      "check",
-      "AndroidForWork",     "<b>Android For Work</b>",       "",                      "check",
       "Books",     "<b>Google Play Books</b>",       "",                      "check",
       "CalculatorGoogle",     "<b>Google Calculator</b>",       "",                      "check",
       "CalendarGoogle",     "<b>Google Calendar</b>",       "",                      "check",
@@ -144,6 +143,8 @@ form(
       "ClockGoogle",     "<b>Google Clock</b>",       "",                      "check",
       "CloudPrint",     "<b>Google Cloud Print</b>",       "",                      "check",
       "ContactsGoogle",     "<b>Google Contacts</b>",       "",                      "check",
+      "DialerFramework",     "<b>Dialer Framework</b>",       "Necessary for Google Dialer compatibility",                      "check",
+      "DialerGoogle",     "<b>Google Dialer</b>",       "",                      "check",
       "DMAgent",     "<b>Google Apps Device Policy</b>",       "",                      "check",
       "Docs",     "<b>Google Docs</b>",       "",                      "check",
       "Drive",     "<b>Google Drive</b>",       "",                      "check",
@@ -159,6 +160,7 @@ form(
       "GooglePlus",     "<b>Google+</b>",       "",                      "check",
       "GoogleTTS",     "<b>Google Text-to-Speech</b>",       "",                      "check",
       "Hangouts",     "<b>Google Hangouts</b>",       "",                      "check",
+      "Hotword",     "<b>OK Google Hotword Enrollment</b>",       "(automatically selected if Search will be installed)",                      "check",
       "Indic",     "<b>Google Indic Keyboard</b>",       "",                      "check",
       "Japanese",     "<b>Google Japanese Input</b>",       "",                      "check",
       "Keep",     "<b>Google Keep</b>",       "",                      "check",
@@ -177,7 +179,7 @@ form(
       "ProjectFi",     "<b>Project Fi by Google</b>",       "",                      "check",
       "Sheets",     "<b>Google Sheets</b>",       "",                      "check",
       "Slides",     "<b>Google Slides</b>",       "",                      "check",
-      "Search",     "<b>Google Search</b>",       "To Exclude BOTH Google Search AND Google Now Launcher <#f00>OR</#> To Include Google Search",                      "check",
+      "Search",     "<b>Google Search</b>",       "To Exclude BOTH Google Search AND Google Now Launcher <#f00>OR</#> To Include Google Search AND OK Google Hotword Enrollment",                      "check",
       "Speech",     "<b>Offline Speech Files</b>",       "(Required for offline voice dicatation support)",                      "check",
       "Street",     "<b>Google Street View</b>",       "",                      "check",
       "TagGoogle",     "<b>Google NFC Tags</b>",       "",                      "check",
@@ -246,6 +248,7 @@ form(
       "PhotoPhase",     "<b>PhotoPhase Live Wallpaper</b>",       "",                      "check",
       "PhotoTable",     "<b>PhotoTable Live Wallpaper</b>",       "",                      "check",
       "PicoTTS",     "<b>Stock/AOSP Text-to-Speech</b>",       "(automatically removed when Google TTS is installed)",                      "check",
+      "Provision",     "<b>Provision application (that can conflict with SetupWizard)</b>",       "(automatically removed on pre-Marshmallow installations)",                      "check",
       "SimToolKit",     "<b>Stock/AOSP Sim ToolKit</b>",       "",                      "check",
       "Studio",     "<b>Stock/AOSP Movie Studio</b>",       "",                      "check",
       "SykoPath",     "<b>SykoPath Layers Manager</b>",       "(found in certain ROM's)",                      "check",
@@ -262,7 +265,9 @@ form(
     "extra",     "Advanced Options",        "",                                         "group",
       "exdebug",     "<b>NoDebug</b>",       "To disable the creation of the debug log",                      "check",
       "extest",     "<b>Test</b>",       "To perform a simulation generating a detailed log, but <u>WILL NOT MAKE ANY CHANGES</u> to your device.",                      "check",
-      "exswype",     "<b>SkipSwypelibs</b>",       "To avoid the installation of the Google Swype libraries for the AOSP Keyboard",                      "check",
+      "exswype",     "<b>SkipSwypelibs</b>",       "To skip/remove the installation of the Google Swype libraries for the AOSP Keyboard",                      "check",
+      "exsubstitute","<b>SubstituteSwypelibs</b>", "To overwrite the AOSP Keyboard libraries with the Google Swype libraries instead of adding",                      "check",
+      "exnopreodex",   "<b>NoPreODEX</b>",           "To disable the smart Pre-ODEX-ing on Marshmallow+ ROMs",                      "check",
       "exclean",     "<b>ForceClean</b>",       "To ignore the detection of dirty installations and force the installer to behave as if it concerns a clean install <u>DO NOT REPORT ANY BUGS IF USED</u>",                      "check"
 );
 
@@ -288,6 +293,16 @@ then
   appendvar("gapps", "skipswypelibs\n");
 endif;
 if
+  prop("extra.prop", "exsubstitute")=="1"
+then
+  appendvar("gapps", "substituteswypelibs\n");
+endif;
+if
+  prop("extra.prop", "exnopreodex")=="1"
+then
+  appendvar("gapps", "nopreodex\n");
+endif;
+if
   prop("extra.prop", "exclean")=="1"
 then
   appendvar("gapps", "forceclean\n");
@@ -309,12 +324,6 @@ if
   prop("gapps.prop", "AndroidPay")=="1"
 then
   appendvar("gapps", "AndroidPay\n");
-endif;
-
-if
-  prop("gapps.prop", "AndroidForWork")=="1"
-then
-  appendvar("gapps", "AndroidForWork\n");
 endif;
 
 if
@@ -369,6 +378,18 @@ if
   prop("gapps.prop", "ContactsGoogle")=="1"
 then
   appendvar("gapps", "ContactsGoogle\n");
+endif;
+
+if
+  prop("gapps.prop", "DialerFramework")=="1"
+then
+  appendvar("gapps", "DialerFramework\n");
+endif;
+
+if
+  prop("gapps.prop", "DialerGoogle")=="1"
+then
+  appendvar("gapps", "DialerGoogle\n");
 endif;
 
 if
@@ -459,6 +480,12 @@ if
   prop("gapps.prop", "Hangouts")=="1"
 then
   appendvar("gapps", "Hangouts\n");
+endif;
+
+if
+  prop("gapps.prop", "Hotword")=="1"
+then
+  appendvar("gapps", "Hotword\n");
 endif;
 
 if
@@ -669,9 +696,9 @@ then
 endif;
 
 if
-  prop("rem.prop", "CMEleven")=="1"
+  prop("rem.prop", "CMMusic")=="1"
 then
-  appendvar("gapps", "CMEleven\n");
+  appendvar("gapps", "CMMusic\n");
 endif;
 
 if
@@ -798,6 +825,12 @@ if
   prop("rem.prop", "PicoTTS")=="1"
 then
   appendvar("gapps", "PicoTTS\n");
+endif;
+
+if
+  prop("rem.prop", "Provision")=="1"
+then
+  appendvar("gapps", "Provision\n");
 endif;
 
 if

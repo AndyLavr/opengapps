@@ -1,0 +1,68 @@
+### LICENSE:
+#
+# Copyright (C) 2011 Ahmad Amarullah ( http://amarullz.com/ )
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+### LANGUAGE STRING RESOURCE FILE
+#
+#   Language  : Russian
+#   By        : Alexander Lartsev
+#
+
+#
+#--- COMMON SYSTEM STRING RESOURCES
+#
+text_ok=ОК
+text_next=Далее
+text_back=Назад
+text_yes=Да
+text_no=Нет
+text_about=О
+text_calibrating=Инструменты калибровки
+text_quit=Завершить установку
+text_quit_msg=Вы уверены, что хотите покинуть установщик?
+
+#
+#-- CUSTOM STRING RESOURCE
+#
+common.for=для
+
+langtest.title=Тест языка
+langtest.multiline=Этот текст находится в langs/ru.lang\
+Используйте развернутый слэш перед добавлением новой строчки\
+\
+Вы можете также сделать <b>Форматирование</b> внутри языковых ресурсов.\
+\
+Спасибо за использование AROMA Установщика
+
+#-- Конец строки без слэша для многострочного текста
+
+themes.title=Выбрать тему
+themes.desc=Пожалуйста выберите тему установщика,которую вы хотите использовать в этом тесте установки:
+
+welcome.title=Добро пожаловать
+welcome.text1=Вы собираетесь узнать об установке
+welcome.text2=AROMA установщик первый и единственный Сенсорный и Настраиваемый Установщик ANDROID прошивок в Мире.
+welcome.version=ВЕРСИЯ
+welcome.codename=КОДОВОЕ НАЗВАНИЕ
+welcome.updated=ОБНОВЛЕНО
+welcome.next=Нажмите "Далее",чтобы продолжить установку...
+
+terms.title=Условия и Положения
+terms.desc=Пожалуйста прочитайте внимательно Условия и Положения AROMA Установщика Ниже.
+terms.check=Я соглашаюсь с Условиями и Положениями...
+terms.confirm=Пожалуйста проверьте соглашение...
+
+changelog.title=Список изменений
+changelog.desc=Список изменений AROMA установщика

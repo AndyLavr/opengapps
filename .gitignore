@@ -10,6 +10,7 @@
 # Generated files
 cache/
 build/
+log/
 out/
 
 # Local configuration file (sdk path, etc)
@@ -21,3 +22,8 @@ local.properties
 #Temporary editor files
 *.bak
 *~
+
+#APKs in the non-sources opengapps repository
+*.apk
+#APKs that are marked as potentially dangerous
+*.err
